@@ -97,3 +97,35 @@ function createStudent(name, year) {
     },
   }
 }
+
+function generateSchool() {
+  return {
+    students: [],
+
+    addstudent: function(name, year) {
+      if (['1st', '2nd', '3rd', '4th', '5th'].indexOf(year) === -1) {
+        console.log('Invalid Year')
+      } else {
+        this.students.push(createStudent(name, year));
+      }
+    },
+
+    enrollStudent: function(student, course) {
+      var selectedStudent = this.students.filter(function(individualStudent) {
+        individualStudent.name === student.name;
+      });
+
+      selectedStudent.courses.push(course);
+    },
+
+    addGrade: function(student, course, grade) {
+      var selectedStudent = this.students.filter(function(individualStudent) {
+        individualStudent.name === student.name;
+      });
+
+      var selectedCourse = selectedStudent.courses.filter(function(selectedCourse) {
+        selectedCourse.code = course.code
+      });
+    }
+  }
+}
