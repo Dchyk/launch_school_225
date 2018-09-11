@@ -102,17 +102,19 @@ function generateSchool() {
   return {
     students: [],
 
-    addstudent: function(name, year) {
-      if (['1st', '2nd', '3rd', '4th', '5th'].indexOf(year) === -1) {
-        console.log('Invalid Year')
+    addStudent: function(student) {
+      if (['1st', '2nd', '3rd', '4th', '5th'].indexOf(student.year) === -1) {
+        console.log('Invalid Year');
       } else {
-        this.students.push(createStudent(name, year));
+        var newStudent = createStudent(student.name, student.year);
+        newStudent.courses = student.courses;
+        this.students.push(newStudent);
       }
     },
 
     enrollStudent: function(student, course) {
       var selectedStudent = this.students.filter(function(individualStudent) {
-        individualStudent.name === student.name;
+        return individualStudent.name === student.name;
       });
 
       selectedStudent.courses.push(course);
@@ -120,12 +122,60 @@ function generateSchool() {
 
     addGrade: function(student, course, grade) {
       var selectedStudent = this.students.filter(function(individualStudent) {
-        individualStudent.name === student.name;
+        return individualStudent.name === student.name;
       });
 
       var selectedCourse = selectedStudent.courses.filter(function(selectedCourse) {
-        selectedCourse.code = course.code
+        return selectedCourse.code = course.code;
       });
+
+      selectedCourse.grade = grade;
+    },
+
+    getReportCard: function(student) {
+      var selectedStudent = this.students.filter(function(individualStudent) {
+        return individualStudent.name === student.name;
+      });
+
+      selectedStudent[0].courses.forEach(function(course) {
+        var grade = course.grade || 'In progress';
+        console.log(course.name + ': ' + grade);
+      });
+    },
+ 
+    courseReport: function(courseName) {
+      var total = 0;
+      var average;
+      var studentsInThisCourse = this.students.filter(function(student) {
+        return student.courses.some(function(course) {
+          return course.name === courseName;
+        });
+      });
+
+      total = studentsInThisCourse.reduce(function(total, student) {
+        return total + student.courses.filter(function(course) {
+          return course.name === courseName;
+        })[0].grade;
+      });
+
+      if (studentsInThisCourse.length === 0) {
+        return undefined;
+      }
+
+      console.log('=' + courseName + ' Grades=');
+
+      studentsInThisCourse.forEach(function(student) {
+        var grade = student.courses.filter(function(course) {
+          return course.name === courseName;
+        })[0].grade;
+
+        total += grade;
+
+        console.log(student.name + ': ' + grade);
+      });
+
+      console.log('---')
+      console.log('Course Average: ' + String(total / studentsInThisCourse.length));
     }
   }
 }
