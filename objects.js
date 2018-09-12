@@ -179,3 +179,87 @@ function generateSchool() {
     }
   }
 }
+
+
+// Execution context
+
+var a = 10;  // window.a = 10;
+var b = 10;  // window.b = 10;
+var c = {    // window.c = {a: -10, b: -10}
+  a: -10,
+  b: -10,
+};
+
+function add() {
+  return this.a + b;  
+}
+
+c.add = add; // window.c = {a: -10, b: -10, add: function add() {return this.a + b}}
+
+console.log(add());   // 20
+console.log(c.add()); // 0
+
+
+// Function.prototype.call() and Function.prototype.apply() allow you to specify an explicit function execution context, 
+// as well as pass arguments to the function being called. call() takes args as a list, whereas apply() takes args as an array
+
+
+// In the code below, use call to invoke add as a method on bar but with foo as execution context. What will this return?
+
+var foo = {
+  a: 1,
+  b: 2,
+};
+
+var bar = {
+   a: 'abc',
+   b: 'def',
+   add: function() {
+     return this.a + this.b;
+   },
+};
+
+bar.add.call(foo); // 3
+
+// Given the code and desired output below, would it make more sense to use call or apply to supply explicit context 
+// and arguments to outputList? Implement a solution using one of the methods, such that the desired output is logged, 
+// and explain your choice.
+
+var fruitsObj = {
+  list: ['Apple', 'Banana', 'Grapefruit', 'Pineapple', 'Orange'],
+  title: 'A Collection of Fruit',
+};
+
+
+
+function outputList() {
+  console.log(this.title + ':');
+
+  var args = [].slice.call(arguments);  // Call Array.protype.slice, and pass in the arguments list. 
+
+  args.forEach(function(elem) {
+    console.log(elem);
+  });
+}
+
+// invoke outputList here - using apply so that we can pass in the list of fruits array
+outputList.apply(fruitsObj, fruitsObj.list);
+
+// A Collection of Fruit:
+// Apple
+// Banana
+// Grapefruit
+// Pineapple
+// Orange
+
+// For an extra challenge, consider this line of code from the previous problem:
+
+// var args = [].slice.call(arguments);
+
+// Inside of JavaScript functions, arguments is an object that holds all of the arguments passed to the function. 
+// Bearing in mind that the function author wants to iterate over the arguments later in the method using an Array method, 
+// why do you think he or she is invoking call?
+
+// - The reason for this this that 'arguments' is not an array, but an Array-like object, and doesn't haven any Array properties
+// or methods except for 'length'. So in order to call Array methods like 'forEach' on it, for example, 
+// it must be transformed into a real Array
